@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Nuxpay admin configuration
+*
+* @category    Nuxpay
+* @package     Nuxpay_Merchant
+* @author      Nuxpay
+* @copyright   Nuxpay (https://nuxpay.com)
+* @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+           <group id="nuxpay_merchant" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="10" translate="label">
+                <label>Nuxpay</label>
+                <field id="active" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="1" translate="label" type="select">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="title" showInDefault="1" showInStore="1" showInWebsite="1" sortOrder="2" translate="label" type="text">
+                    <!-- <label>Title</label> -->
+                    <label><![CDATA[Title]]></label>                    
+                    <frontend_model>Nuxpay\Merchant\Block\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                <field id="app_key" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[NUXPAY API KEY]]></label>
+                </field>
+                <field id="business_id" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[NUXPAY BUSINESS ID]]></label>
+                </field>                
+                <field id="callback_url" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label><![CDATA[CALLBACK URL <br /> (Copy this url and set in <a href="https://www.nuxpay.com" target="_blank">Merchants</a>)]]></label>
+                    <frontend_model>Nuxpay\Merchant\Block\System\Config\Form\Field\Disable</frontend_model>
+                </field>
+                
+            </group> 
+        </section>
+    </system>
+</config>

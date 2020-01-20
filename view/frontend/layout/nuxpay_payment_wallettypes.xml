@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Nuxpay payment view
+*
+* @category    Nuxpay
+* @package     Nuxpay_Merchant
+* @author      Nuxpay
+* @copyright   Nuxpay (https://nuxpay.com)
+* @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+*/
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+	  <head>
+        <css src="Nuxpay_Merchant::css/styles.css" />
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Nuxpay\Merchant\Block\NuxPay"
+                   name="WalletTypes.view"
+                   template="Nuxpay_Merchant::pay/WalletTypes.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

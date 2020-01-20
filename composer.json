@@ -1,0 +1,25 @@
+{
+    "name": "nuxpay/module-merchant",
+    "type": "magento2-module",
+    "description": "Bitcoin integration for Magento 2 via Nuxpay",
+    "version": "0.0.1",
+    "keywords": [
+      "nuxpay",
+      "merchant",
+      "magento"
+    ],
+    "homepage": "https://www.nuxpay.com",
+    "license": "OSL-3.0",
+    "authors": [
+        {
+            "name": "Nuxpay",
+            "homepage": "https://www.nuxpay.com"
+        }
+    ],
+    "autoload": {
+        "files": [ "registration.php" ],
+        "psr-4": {
+            "Nuxpay\\Merchant\\": ""
+        }
+    }
+}

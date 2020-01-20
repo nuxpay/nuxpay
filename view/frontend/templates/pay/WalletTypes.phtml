@@ -1,0 +1,126 @@
+<?php
+/**
+ * Nuxpay schema installation
+ *
+ * @category    Nuxpay
+ * @package     Nuxpay_Merchant
+ * @author      Nuxpay
+ * @copyright   Nuxpay (https://nuxpay.com)
+ * @license     http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+
+
+
+if( isset($_POST["orderId"]) ) {
+  $orderId = $_POST["orderId"];
+} else {
+  $orderId = $block->getOrderId();
+}
+
+$orderGrandTotal = $block->getOrderPriceInFiat($orderId);
+$orderCurrency = $block->getCurrencyCode();
+
+if( isset($_POST["crypto_checkout"]) ) {
+  $crypto_total = $_POST["crypto_total"] ?? "";
+  $cryptocurrency = $_POST["cryptocurrency"] ?? "";
+  $crypto_unit = $_POST["crypto_unit"] ?? "";
+
+  $transaction_token = $block->requestTransaction($cryptocurrency, $crypto_total, $orderId, $crypto_unit);
+
+  if ($transaction_token != "") {
+
+    echo "<form id='wp_nuxpay_pg_form' action='https://www.nuxpay.com/qrPayment.php' method='post'>";
+    echo "<input type='hidden' name='transaction_token' value='".$transaction_token."'>";
+    echo "</form>";
+    echo "<script>document.getElementById('wp_nuxpay_pg_form').submit();</script>";
+    return;
+  }
+
+}
+
+
+$support_pg_currency = $block->getWalletTypes();
+$selected_crypto_currency = $_POST["cryptocurrency"] ?? "";
+if($selected_crypto_currency == "" ) {
+  $selected_crypto_currency = $support_pg_currency[0]["wallet_type"];
+}
+
+$conversion_params["orderGrandTotal"] = $orderGrandTotal;
+$conversion_params["orderCurrency"] = $orderCurrency;
+$conversion_params["selected_crypto_type"] = $selected_crypto_currency;
+$convert_rate = $block->getConversionRate($conversion_params);
+$crypto_total = $convert_rate["crypto_total"];
+$crypto_currency = $convert_rate["crypto_currency"];
+
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$storeManager = $objectManager->get('\Magento\Store\Model\StoreManagerInterface');
+$base_url = $storeManager->getStore()->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_WEB);
+?>
+
+<div class="modal-content">
+    <div class="modal-body" style = "text-align:center;">
+        <div class="row">
+            <div class="block col-lg-12 mt-4" style="padding-bottom: 20px;">
+                <span id="payment_window" style="color: #1D72EF; margin: 30px">Please select your wallet type : </span>
+                <div class="form-group m-form__group mt-2">
+                        <div class="col-lg-5 col-md-5">
+                            <div class="col-lg-12 px-0" style="">
+                                <div class="row">
+                                  <div class="col-lg-9 col-md-9 col-8" style="padding-right: unset;">
+                                      <form action="" name="cryptocurrency_form" method="POST">
+                                      <select id="cryptocurrency" name="cryptocurrency" style = "margin:30px; width:200px" onchange="this.form.submit()">
+                                        <?php
+                                          foreach($support_pg_currency as $currency){
+                                            $name = $currency["wallet_type"];
+                                            $value = $currency["wallet_name"];
+                                            echo "<option value=".$name;
+                                            if (strtolower($name) == strtolower($selected_crypto_currency) ) {
+                                              echo " selected ";
+                                            }
+                                            echo ">".$value."</option>";
+                                          }
+                                        ?>
+                                      </select>  
+                                      <input type="hidden" name="orderId" id="orderId" value="<?php echo $orderId; ?>">    
+                                      </form>                  
+                                  </div>
+                                  <span id="payment_window" style="color: #1D72EF; margin: 30px">You've choosen : </span>
+                                  <div id="cryptocurrency_name" style="margin-bottom:30px">Bitcoin</div>
+                                </div>
+                            </div>
+                        </div>
+                    <div class="col-lg-1 col-md-1 text-center mb-2">						
+                        <i class="fa fa-exchange" style="font-size: 20px;margin-top: 10px" aria-hidden="true"></i>
+                    </div>
+                    <div class="row">
+                        <span id="order_price"><?php echo number_format($conversion_params["orderGrandTotal"], 2, '.', ','); ?></span>
+                        <span id="order_currency"><?php echo $conversion_params["orderCurrency"]; ?></span>
+                        <span> &asymp; </span>
+                        <span id="cryptocurrency_value">
+                          <?php 
+                            echo $crypto_total;
+                          ?>
+                        </span>
+                        <span id="cryptocurrency_shortname" class="col-lg-3 col-md-3 col-4 currencyInput" style=""><?php echo $crypto_currency; ?></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" align="center" style="padding:10px;padding-top: unset">
+        
+          <form name="frm_confirm" id="frm_confirm" action="" method="POST">
+            <input type="hidden" name="cryptocurrency" id="cryptocurrency" value="<?php echo $selected_crypto_currency; ?>">
+            <input type="hidden" name="crypto_total" id="crypto_total" value="<?php echo $crypto_total; ?>">
+            <input type="hidden" name="crypto_checkout" id="crypto_checkout" value="1">
+            <input type="hidden" name="orderId" id="orderId" value="<?php echo $orderId; ?>">
+            <input type="hidden" name="crypto_unit" id="crypto_unit" value="<?php echo $crypto_currency; ?>">
+            <button type="submit" class="btn btn-primary callBtn" style="width:100px;border:unset;background-color:#1D72EF">Confirm</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="border:unset;width:100px" onClick="window.location.href='<?php echo $base_url; ?>/checkout/cart/';">Back</button>
+          </form>
+
+    </div>
+</div>

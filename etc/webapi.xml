@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+	<route url="/V1/nuxpay/callback" method="POST">
+		<service class="Nuxpay\Merchant\Api\WebserviceInterface" method="nuxpayCallback"/>
+		<resources>
+			<resource ref="anonymous"/>
+		</resources>
+	</route>
+</routes>
